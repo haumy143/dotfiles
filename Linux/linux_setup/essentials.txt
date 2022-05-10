@@ -1,0 +1,6 @@
+neofetch
+htop
+speedtest-cli
+zsh
+vim
+ranger

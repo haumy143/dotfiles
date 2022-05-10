@@ -1,0 +1,15 @@
+- name: Update packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: install essential packages
+  package:
+    name:
+      - neofetch
+      - htop
+      - speedtest-cli
+      - zsh
+      - vim
+      - ranger
+    state: latest
