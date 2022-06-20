@@ -1,107 +1,183 @@
 #!/bin/bash
 
 create_admin () {
-        echo -e "Enter Username"
+        printf "Enter Username: "
         read user_name
-        echo -e "Enter Password"
+        printf "Enter Password: "
         read user_passwd
-        echo -e "do you want to create a home directory?(y/n)"
+        printf "do you want to create a home directory?(y/n): "
         read homedir_answer
 
-        if [ $homedir_answer -eq "y" ]; then
-                useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                tail /etc/passwd | grep $user_name
-                usermod -aG sudo $user_name
-        else
-                useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                tail  /etc/passwd | grep $user_name
-                usermod -aG sudo $user_name
-        fi
+        while true; do
+                case $homedir_answer in
+                        y )     useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                                tail /etc/passwd | grep $user_name
+                                usermod -aG sudo $user_name
+                                printf "created sudo user $user_name with home directory\n"
+                                break ;;
+
+                        n )     useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                                tail  /etc/passwd | grep $user_name
+                                usermod -aG sudo $user_name
+                                printf "created sudo user $user_name\n"
+                                break ;;
+
+                        * )     printf "invalid response, try again\n"
+                                printf "do you want to create a home directory?(y/n): "
+                                read homedir_answer ;;
+                esac
+        done
+
+        printf "should the user $user_name be added to a group?(y/n): "
+        read group_answer
+        
+        while true; do
+                case $group_answer in
+                        y )     getent group | cut -d: -f1
+                                printf "whats the name of the group: "
+                                read group_name
+                                usermod -aG $group_name $user_name
+                                printf "added $user_name to group $group_name\n"
+                                break ;;
+                                
+                        n )     break ;;
+
+                        * )     printf "invalid response, try again\n"
+                                printf "do you want to create a home directory?(y/n): "
+                                read homedir_answer ;;
+                esac
+        done
+        printf "finished!!!\n"
 }
 
 create_user () {
-        echo -e "Enter Username"
+        printf "Enter Username: "
         read user_name
-        echo -e "Enter Password"
+        printf "Enter Password: "
         read user_passwd
-        echo -e "do you want to create a home directory?(y/n)"
+        printf "do you want to create a home directory?(y/n): "
         read homedir_answer
 
-        if [ $homedir_answer -eq "y" ]; then
-                useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                tail /etc/passwd
-        else
+        while true; do
+                case $homedir_answer in
+                        y )     useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                                tail /etc/passwd | grep $user_name
+                                printf "created user $user_name with home directory\n"
+                                break ;;
 
-                useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                tail  /etc/passwd
-        fi
+                        n )     useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                                tail  /etc/passwd | grep $user_name
+                                printf "created user $user_name\n"
+                                break ;;
 
-        	echo "do you want to add $user_name to a group?(y/n)"
-        	read group_answer
+                        * )     printf "invalid response, try again\n"
+                                printf "do you want to create a home directory?(y/n): "
+                                read homedir_answer ;;
+                esac
+        done
 
-        if [$group_answer -eq "y"] ; then
-                echo "to which group do you want to add the user?: "
-                groups
-                read group
-                usermod -aG $group $user_name
-	else
-		echo "all done"
-        fi
+        printf "should the user $user_name be added to a group?(y/n): "
+        read group_answer
+        
+        while true; do
+                case $group_answer in
+                        y )     printf "printing all groups: \n"
+                                getent group | cut -d: -f1
+                                printf "whats the name of the group: "
+                                read group_name
+                                usermod -aG $group_name $user_name
+                                printf "added $user_name to group $group_name\n"
+                                break ;;
+                                
+                        n )     break ;;
+
+                        * )     printf "invalid response, try again\n"
+                                printf "do you want to create a home directory?(y/n): "
+                                read homedir_answer ;;
+                esac
+        done
+        printf "finished!!!\n"
 }
 
 create_from_file () {
-	echo -e "Enter file name for users:"
+	printf "Enter file name for users:"
         read user_list
-	echo -e "should the user be added to a group?(y/n)"
+	printf "should the user be added to a group?(y/n)"
 	read group_answer
-	echo -e "which group: "
-	groups
-	read group
+        
+        while true; do
+                case $group_answer in
+                        y )     printf "printing all groups: \n"
+                                getent group | cut -d: -f1
+                                printf "whats the name of the group: "
+                                read group_name
+                                break ;;
+                                
+                        n )     break ;;
 
-	if [$group_answer -eq "y"]; then
+                        * )     printf "invalid response, try again\n"
+                                printf "do you want to create a home directory?(y/n): "
+                                read homedir_answer ;;
+                esac
+        done
+
+
+
+	if [ "$group_answer" = "y" ]; then
 
         	while read user_name
         	do
         		useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_name") $user_name
-        		echo "created user $user_name"
-			usermod -aG $group $user_name
+			usermod -aG $group_name $user_name
+                        passwd --expire $user_name
+        		printf "created user $user_name and added them to group $group_name \n"
         	done < $user_list
 	else 
 		while read user_name
                 do
                         useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_name") $user_name
-                        echo "created user $user_name"
-                        usermod -aG $group $user_name
+                        passwd --expire $user_name
+                        printf "created user $user_name\n"
                 done < $user_list
 	fi
         
-	echo "created all users with the username as password"
-
+        printf "#####################################################\n"
+	printf "###created all users with the username as password###\n"
+        printf "#####################################################\n"
 }
 
-choice=5
+delete_user () {
+        printf "User to be deleted: "
+        read user_name
+        userdel $user_name
+        user_directory=/home/$user_name
+
+        if [ -d "$user_directory" ]; then
+                rm -r /home/"$user_name"
+        fi
+        
+        printf "Deleted user $user_name"
+}
+
+choice=0
 # Main display
-echo "Enter number to select an option"
-echo
-echo "1) Add SuperUser"
-echo "2) Add normal User"
-echo "3) Add multiple Users from file"
-echo
+printf "#####################################################\n"
+printf "############### RUN SCRIPT AS SUDO! #################\n"
+printf "#####################################################\n"
+printf "\n"
+printf "Enter number to select an option\n"
+printf "1) Add SuperUser\n"
+printf "2) Add normal User\n"
+printf "3) Add multiple Users from file\n"
+printf "4) Delete User and /home directory\n"
+printf "Answer: "
 
-while [ $choice -eq 5 ]; do
-
+while [ $choice -eq 0 ]; do
 read choice
-
-if [ $choice -eq 1 ] ; then    
-	create_admin
-	fi                   
-
-if [ $choice -eq 2 ] ; then
-
-        create_user
-	fi
-
-if [ $choice -eq 3 ] ; then
-	create_from_file
-	fi
+        case $choice in
+                1 ) create_admin ;;
+                2 ) create_user ;;
+                3 ) create_from_file ;;
+                4 ) delete_user ;;
+        esac
 done
