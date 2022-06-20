@@ -12,4 +12,4 @@
 
 while read -r p; do
     echo "$p"
-done <essentials.txt
+done

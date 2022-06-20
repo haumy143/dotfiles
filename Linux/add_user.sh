@@ -8,15 +8,14 @@ create_admin () {
         echo -e "do you want to create a home directory?(y/n)"
         read homedir_answer
 
-         if [ $homedir_answer -eq "y" ]; then
-                 useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                 tail /etc/passwd
-                 usermod -aG sudo $user_name
-          else
-
-                 useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                 tail  /etc/passwd | grep $user_name
-                 usermod -aG sudo $user_name
+        if [ $homedir_answer -eq "y" ]; then
+                useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                tail /etc/passwd | grep $user_name
+                usermod -aG sudo $user_name
+        else
+                useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                tail  /etc/passwd | grep $user_name
+                usermod -aG sudo $user_name
         fi
 }
 
@@ -29,18 +28,18 @@ create_user () {
         read homedir_answer
 
         if [ $homedir_answer -eq "y" ]; then
-                 useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                 tail /etc/passwd
+                useradd -m -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                tail /etc/passwd
         else
 
-                 useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
-                 tail  /etc/passwd
+                useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_passwd") $user_name
+                tail  /etc/passwd
         fi
 
         	echo "do you want to add $user_name to a group?(y/n)"
         	read group_answer
 
-        if [$group_answer -eq "y"]; then
+        if [$group_answer -eq "y"] ; then
                 echo "to which group do you want to add the user?: "
                 groups
                 read group
