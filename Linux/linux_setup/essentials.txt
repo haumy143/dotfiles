@@ -4,3 +4,4 @@ speedtest-cli
 zsh
 vim
 ranger
+nmap

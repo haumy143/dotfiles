@@ -2,11 +2,11 @@
 
 create_admin () {
         printf "Enter Username: "
-        read user_name
+        read -r user_name
         printf "Enter Password: "
-        read user_passwd
+        read -r user_passwd
         printf "do you want to create a home directory?(y/n): "
-        read homedir_answer
+        read -r homedir_answer
 
         while true; do
                 case $homedir_answer in
@@ -24,18 +24,18 @@ create_admin () {
 
                         * )     printf "invalid response, try again\n"
                                 printf "do you want to create a home directory?(y/n): "
-                                read homedir_answer ;;
+                                read -r homedir_answer ;;
                 esac
         done
 
         printf "should the user $user_name be added to a group?(y/n): "
-        read group_answer
+        read -r group_answer
         
         while true; do
                 case $group_answer in
                         y )     getent group | cut -d: -f1
                                 printf "whats the name of the group: "
-                                read group_name
+                                read -r group_name
                                 usermod -aG $group_name $user_name
                                 printf "added $user_name to group $group_name\n"
                                 break ;;
@@ -44,7 +44,7 @@ create_admin () {
 
                         * )     printf "invalid response, try again\n"
                                 printf "do you want to create a home directory?(y/n): "
-                                read homedir_answer ;;
+                                read -r homedir_answer ;;
                 esac
         done
         printf "finished!!!\n"
@@ -52,11 +52,11 @@ create_admin () {
 
 create_user () {
         printf "Enter Username: "
-        read user_name
+        read -r user_name
         printf "Enter Password: "
-        read user_passwd
+        read -r user_passwd
         printf "do you want to create a home directory?(y/n): "
-        read homedir_answer
+        read -r homedir_answer
 
         while true; do
                 case $homedir_answer in
@@ -72,19 +72,19 @@ create_user () {
 
                         * )     printf "invalid response, try again\n"
                                 printf "do you want to create a home directory?(y/n): "
-                                read homedir_answer ;;
+                                read -r homedir_answer ;;
                 esac
         done
 
         printf "should the user $user_name be added to a group?(y/n): "
-        read group_answer
+        read -r group_answer
         
         while true; do
                 case $group_answer in
                         y )     printf "printing all groups: \n"
                                 getent group | cut -d: -f1
                                 printf "whats the name of the group: "
-                                read group_name
+                                read -r group_name
                                 usermod -aG $group_name $user_name
                                 printf "added $user_name to group $group_name\n"
                                 break ;;
@@ -93,7 +93,7 @@ create_user () {
 
                         * )     printf "invalid response, try again\n"
                                 printf "do you want to create a home directory?(y/n): "
-                                read homedir_answer ;;
+                                read -r homedir_answer ;;
                 esac
         done
         printf "finished!!!\n"
@@ -101,23 +101,23 @@ create_user () {
 
 create_from_file () {
 	printf "Enter file name for users:"
-        read user_list
+        read -r user_list
 	printf "should the user be added to a group?(y/n)"
-	read group_answer
+	read -r group_answer
         
         while true; do
                 case $group_answer in
                         y )     printf "printing all groups: \n"
                                 getent group | cut -d: -f1
                                 printf "whats the name of the group: "
-                                read group_name
+                                read -r group_name
                                 break ;;
                                 
                         n )     break ;;
 
                         * )     printf "invalid response, try again\n"
                                 printf "do you want to create a home directory?(y/n): "
-                                read homedir_answer ;;
+                                read -r homedir_answer ;;
                 esac
         done
 
@@ -125,7 +125,7 @@ create_from_file () {
 
 	if [ "$group_answer" = "y" ]; then
 
-        	while read user_name
+        	while read -r user_name
         	do
         		useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_name") $user_name
 			usermod -aG $group_name $user_name
@@ -133,7 +133,7 @@ create_from_file () {
         		printf "created user $user_name and added them to group $group_name \n"
         	done < $user_list
 	else 
-		while read user_name
+		while read -r user_name
                 do
                         useradd -p $(perl -e 'print crypt($ARGV[0], "password")' "$user_name") $user_name
                         passwd --expire $user_name
@@ -148,7 +148,7 @@ create_from_file () {
 
 delete_user () {
         printf "User to be deleted: "
-        read user_name
+        read -r user_name
         userdel $user_name
         user_directory=/home/$user_name
 
@@ -173,7 +173,7 @@ printf "4) Delete User and /home directory\n"
 printf "Answer: "
 
 while [ $choice -eq 0 ]; do
-read choice
+read -r choice
         case $choice in
                 1 ) create_admin ;;
                 2 ) create_user ;;
