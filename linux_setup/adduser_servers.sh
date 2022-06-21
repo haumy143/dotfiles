@@ -1,6 +1,8 @@
 #!/bin/bash
 
-servers=$(cat servers.txt)
+printf "path to servers.txt: "
+read -r servers_file
+servers=$(cat $servers_file)
 
 echo -n "Enter the username: "
 read name
