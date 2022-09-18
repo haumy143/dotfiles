@@ -100,8 +100,8 @@ create_user () {
 }
 
 create_from_file () {
-	printf "Path to file:"
-        read -r -e user_list
+	printf "Enter file name for users:"
+        read -r user_list
 	printf "should the user be added to a group?(y/n)"
 	read -r group_answer
         
