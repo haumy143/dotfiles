@@ -2,9 +2,6 @@
 
 IPaddr=$1
 
-echo $IPaddr
-
-
 ping_scan () {
     nmap -PE -sn -oG - $IPaddr
 }
@@ -39,7 +36,7 @@ printf "2) tcp/ping_scan\n"
 printf "3) host-fast_scan\n"
 printf "4) host-main_scan\n"
 printf "5) network-main_scan\n"
-printf "Answer: "
+printf "Choice: "
 
 
 while [ $choice -eq 0 ]; do
